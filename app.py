@@ -4,7 +4,7 @@ import numpy as np
 import streamlit as st
 from webcam import webcam
 from images import image_transformations
-
+from PIL import Image
 title = st.empty()
 title.header("Image Filter")
 img_extensions = ["jpg","png","jpeg"]
@@ -25,13 +25,16 @@ if selected_option == "Image Filters":
     if img_operation_mode == "Local Storage":
         uploaded_file = st.file_uploader("Upload images from local storage here",type = img_extensions)
         if uploaded_file is not None:
+
+            image_byte = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+            uploaded_file.seek(0)
             img_bytes = uploaded_file.read()
             decoded_img = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), -1)
             result = decoded_img
-
+            inp_img = cv2.imdecode(image_byte, 1)
             filter = st.selectbox("Choose an Image filter: ",["Basic Image Editing","Thug Life","Green Screen","Moustaches",\
             "Devil-ie","Heart Eyes","John Cena XD","Cartoonie","Face Blur"],0)
-            image_transformations(result,filter,uploaded_file.name.split("."))
+            image_transformations(result,inp_img,filter,uploaded_file.name.split("."))
 
     elif img_operation_mode == "Take a snap from Webcam":
         result = webcam()

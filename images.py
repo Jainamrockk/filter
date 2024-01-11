@@ -5,6 +5,7 @@ import numpy as np
 from PIL import ImageFont, ImageDraw, Image
 import streamlit as st
 from modules.Cartoon.main import cartoon
+from modules.ThugLife.main import thug_life
 # from helper.utils import file_checker
 # from helper.descriptor import file_info
 # from helper.rcnn_utils import generate_rcnn_mask
@@ -18,7 +19,7 @@ def get_binary_file_downloader_html(bin_file,file_label='File'):
     href = f'<h3><a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a></h3>'
     return href
 
-def image_transformations(result,filter,img_extension = "jpg"):
+def image_transformations(result,inp_img,filter,img_extension = "jpg"):
         result = result[:,:,:3]
         # filter_info(filter)
         if filter == "Basic Image Editing":
@@ -53,6 +54,11 @@ def image_transformations(result,filter,img_extension = "jpg"):
             blurVal = st.slider("Blurr effect",3,101,7,2)
             totalCols = st.slider("Total Color in images",2,100,11,1)
             result = cartoon(result,[line_size,blurVal,totalCols])
+        elif filter == "Thug Life":
+            angle = st.slider("Angle",-360,360,0,1)
+            x = st.slider("Shift X",-1.0,1.0,0.0,0.1)
+            y = st.slider("Shift Y", -1.0, 1.0, 0.0, 0.1)
+            result = thug_life(inp_img,angle,x,y)
         if np.all(result != None):
             st.image(result, use_column_width=True, clamp=True, channels="BGR")
             filename = img_extension[0] + "." + img_extension[-1]
